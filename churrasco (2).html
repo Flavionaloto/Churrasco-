@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Churrasco dia 31 🔥</title>
+<style>
+  :root {
+    --bg: #1a0a00;
+    --card: #2c1200;
+    --accent: #ff6b1a;
+    --accent2: #ffaa44;
+    --text: #fff8f0;
+    --muted: #c49a6c;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: inherit; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 48px;
+  }
+  .hero { text-align: center; padding: 32px 16px 20px; }
+  .emoji { font-size: 64px; display: block; margin-bottom: 12px; }
+  h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+  }
+  .subtitle { color: var(--muted); margin-top: 6px; font-size: 0.95rem; }
+  .cards {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(255,107,26,0.2);
+  }
+  .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .card-icon { font-size: 1.4rem; }
+  .card-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .card-value { font-size: 1.05rem; color: var(--text); line-height: 1.5; }
+  .nav-btns { display: flex; gap: 10px; margin-top: 12px; }
+  .map-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 10px;
+    flex: 1;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .map-btn:hover { opacity: 0.88; }
+  .btn-gmaps { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #1a0a00; }
+  .btn-waze { background: #33ccff; color: #00003a; }
+
+  /* Lista confirmados */
+  .confirmados-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .confirmado-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 1rem;
+  }
+  .confirmado-nome { display: flex; align-items: center; gap: 8px; }
+  .confirmado-nome::before { content: "✅"; font-size: 0.9rem; }
+  .btn-remove {
+    background: rgba(255,80,80,0.15);
+    border: none;
+    color: #ff6060;
+    border-radius: 8px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    display: none;
+  }
+  .admin-mode .btn-remove { display: inline-block; }
+  .empty { color: var(--muted); font-size: 0.9rem; font-style: italic; }
+
+  /* Admin add form */
+  .admin-add { display: none; margin-top: 14px; gap: 8px; }
+  .admin-mode .admin-add { display: flex; }
+  .admin-input {
+    flex: 1;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,107,26,0.3);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-size: 0.95rem;
+    outline: none;
+  }
+  .admin-input::placeholder { color: var(--muted); }
+  .btn-add {
+    background: var(--accent);
+    color: #1a0a00;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-weight: 800;
+    cursor: pointer;
+    font-size: 0.95rem;
+  }
+
+  /* Admin badge */
+  .admin-badge {
+    display: none;
+    background: rgba(255,107,26,0.15);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .admin-mode .admin-badge { display: inline-block; }
+
+  /* Footer / admin trigger */
+  .footer {
+    margin-top: 40px;
+    color: var(--muted);
+    font-size: 0.75rem;
+    text-align: center;
+    opacity: 0.5;
+  }
+  .admin-trigger {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 0.7rem;
+    cursor: pointer;
+    margin-top: 10px;
+    opacity: 0.3;
+    text-decoration: underline;
+  }
+  .admin-trigger:hover { opacity: 0.7; }
+
+  /* Modal senha */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #2c1200;
+    border-radius: 16px;
+    padding: 28px 24px;
+    width: 90%;
+    max-width: 340px;
+    border: 1px solid rgba(255,107,26,0.3);
+    text-align: center;
+  }
+  .modal h2 { font-size: 1.1rem; margin-bottom: 16px; color: var(--accent2); }
+  .modal-input {
+    width: 100%;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,107,26,0.3);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-size: 1rem;
+    outline: none;
+    margin-bottom: 12px;
+    text-align: center;
+    letter-spacing: 3px;
+  }
+  .modal-error { color: #ff6060; font-size: 0.85rem; margin-bottom: 10px; min-height: 20px; }
+  .btn-entrar {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #1a0a00;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 0;
+    width: 100%;
+    font-weight: 800;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  .btn-sair {
+    background: rgba(255,80,80,0.12);
+    border: 1px solid rgba(255,80,80,0.3);
+    color: #ff8080;
+    border-radius: 10px;
+    padding: 8px 18px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin-top: 8px;
+    display: none;
+  }
+  .admin-mode .btn-sair { display: inline-block; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <span class="emoji">🔥</span>
+  <h1>Churrasco dia 31!</h1>
+  <p class="subtitle">Você está convidado 🎉</p>
+</div>
+
+<div class="cards">
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">📅</span>
+      <span class="card-title">Data &amp; Hora</span>
+    </div>
+    <div class="card-value">Sábado, 31 de outubro<br>A partir do meio-dia 🍖</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">📍</span>
+      <span class="card-title">Local</span>
+    </div>
+    <div class="card-value">R. Pedro Virillo, 186 — Bl 5, Ap 86<br>Jardim Santiago · Indaiatuba/SP<br>CEP 13339-545<br>🔥 Churrasqueira nº 2</div>
+    <div class="nav-btns">
+      <a class="map-btn btn-gmaps"
+        href="https://www.google.com/maps/search/?api=1&query=R.+Pedro+Virillo+186+Jardim+Santiago+Indaiatuba+SP"
+        target="_blank" rel="noopener">
+        🗺️ Google Maps
+      </a>
+      <a class="map-btn btn-waze"
+        href="https://waze.com/ul?q=R.+Pedro+Virillo+186+Jardim+Santiago+Indaiatuba+SP&navigate=yes"
+        target="_blank" rel="noopener">
+        🚗 Waze
+      </a>
+    </div>
+  </div>
+
+
+
+</div>
+
+<div class="footer">
+  Churrasco do Nozella • Indaiatuba/SP
+  <br>
+  <button class="admin-trigger" onclick="abrirModal()">·</button>
+</div>
+
+<!-- Modal senha -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2>🔐 Área do admin</h2>
+    <input class="modal-input" id="senha-input" type="password" placeholder="••••" maxlength="20"
+      onkeydown="if(event.key==='Enter') verificarSenha()">
+    <div class="modal-error" id="modal-error"></div>
+    <button class="btn-entrar" onclick="verificarSenha()">Entrar</button>
+  </div>
+</div>
+
+<script>
+  // ⚙️ SENHA DO ADMIN — mude aqui se quiser
+  const SENHA = "churras31";
+
+  // Chave para salvar no localStorage do navegador
+  const STORAGE_KEY = "churrasco31_confirmados";
+
+  let adminAtivo = false;
+
+  // Carrega lista salva ou vazia
+  function carregarLista() {
+    try {
+      const salvo = localStorage.getItem(STORAGE_KEY);
+      return salvo ? JSON.parse(salvo) : [];
+    } catch { return []; }
+  }
+
+  function salvarLista(lista) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(lista)); } catch {}
+  }
+
+  function renderizarLista() {
+    const lista = carregarLista();
+    const ul = document.getElementById("lista");
+    ul.innerHTML = "";
+    if (lista.length === 0) {
+      ul.innerHTML = '<li class="empty">Em breve…</li>';
+      return;
+    }
+    lista.forEach((nome, i) => {
+      const li = document.createElement("li");
+      li.className = "confirmado-item";
+      li.innerHTML = `
+        <span class="confirmado-nome">${nome}</span>
+        <button class="btn-remove" onclick="removerNome(${i})">remover</button>
+      `;
+      ul.appendChild(li);
+    });
+  }
+
+  function adicionarNome() {
+    const input = document.getElementById("input-nome");
+    const nome = input.value.trim();
+    if (!nome) return;
+    const lista = carregarLista();
+    lista.push(nome);
+    salvarLista(lista);
+    renderizarLista();
+    input.value = "";
+    input.focus();
+  }
+
+  function removerNome(index) {
+    const lista = carregarLista();
+    lista.splice(index, 1);
+    salvarLista(lista);
+    renderizarLista();
+  }
+
+  function abrirModal() {
+    if (adminAtivo) return;
+    document.getElementById("modal").classList.add("open");
+    document.getElementById("senha-input").value = "";
+    document.getElementById("modal-error").textContent = "";
+    setTimeout(() => document.getElementById("senha-input").focus(), 100);
+  }
+
+  function verificarSenha() {
+    const val = document.getElementById("senha-input").value;
+    if (val === SENHA) {
+      document.getElementById("modal").classList.remove("open");
+      ativarAdmin();
+    } else {
+      document.getElementById("modal-error").textContent = "Senha incorreta, tenta de novo!";
+    }
+  }
+
+  function ativarAdmin() {
+    adminAtivo = true;
+    document.body.classList.add("admin-mode");
+    renderizarLista();
+  }
+
+  function sairAdmin() {
+    adminAtivo = false;
+    document.body.classList.remove("admin-mode");
+  }
+
+  // Enter no campo de nome
+  document.addEventListener("DOMContentLoaded", () => {
+    renderizarLista();
+    document.getElementById("input-nome").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") adicionarNome();
+    });
+  });
+</script>
+</body>
+</html>
